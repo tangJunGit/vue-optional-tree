@@ -57,7 +57,7 @@
         role="group"
         :aria-expanded="expanded"
       >
-        <tree-node
+        <el-tree-node
           :render-content="renderContent"
           v-for="child in node.childNodes"
           :render-after-expand="renderAfterExpand"
@@ -65,18 +65,22 @@
           :key="getNodeKey(child)"
           :node="child"
           @node-expand="handleChildNodeExpand">
-        </tree-node>
+        </el-tree-node>
       </div>
     </el-collapse-transition>
   </div>
 </template>
 
 <script type="text/jsx">
-  import emitter from './src/mixins/emitter';
-  import { getNodeKey } from './packages/tree/src/model/util';
+  import ElCollapseTransition from 'element-ui/src/transitions/collapse-transition';
+  import ElCheckbox from 'element-ui/packages/checkbox';
+  import emitter from 'element-ui/src/mixins/emitter';
+  import { getNodeKey } from './model/util';
 
   export default {
-    name: 'tree-node',
+    name: 'ElTreeNode',
+
+    componentName: 'ElTreeNode',
 
     mixins: [emitter],
 
@@ -99,6 +103,8 @@
     },
 
     components: {
+      ElCollapseTransition,
+      ElCheckbox,
       NodeContent: {
         props: {
           node: {
@@ -197,30 +203,7 @@
       },
 
       handleCheckChange(value, ev) {
-        let changeNodeChecked = (nodes, isChecked) => {
-          for (let i = 0; i < nodes.length; i++) {
-              let item = nodes[i];
-              item.checked = isChecked;
-              if (item.childNodes) {
-                changeNodeChecked(item.childNodes, isChecked);
-              }
-          }
-        }
-        
-        if(this.tree.checkStrictly){
-          let isAllChildrenChecked = this.node.childNodes.every(item => item.checked === true);
-
-          if(!value && isAllChildrenChecked && this.node.childNodes.length > 0){
-            this.node.checked = true;
-          }else{
-            this.node.checked = value;
-          }
-          
-          changeNodeChecked(this.node.childNodes, value)
-        }else{
-          this.node.setChecked(ev.target.checked, !this.tree.checkStrictly);
-        }
-        
+        this.node.setChecked(ev.target.checked, !this.tree.checkStrictly);
         this.$nextTick(() => {
           const store = this.tree.store;
           this.tree.$emit('check', this.node.data, {

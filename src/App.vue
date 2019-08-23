@@ -58,7 +58,7 @@ export default {
   },
   methods: {
     getCheckedKeys () {
-      console.log(this.$refs.tree.getCheckedKeys());
+      // console.log(this.$refs.tree.getCheckedKeys());
     }
   },
   components: {
